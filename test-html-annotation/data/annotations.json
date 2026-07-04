@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "page": {
+    "path": "/",
+    "title": "HTML Annotator Demo Workspace"
+  },
+  "ui": {
+    "launcher": {
+      "x": 24,
+      "y": 24
+    },
+    "showMarkers": true
+  },
+  "annotations": []
+}
