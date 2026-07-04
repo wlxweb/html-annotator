@@ -22,6 +22,12 @@
 
 ---
 
+## 在线预览
+
+- GitHub Pages 预览：[https://wlxweb.github.io/html-annotator/](https://wlxweb.github.io/html-annotator/)
+- 说明：Pages 预览版使用 `localStorage` 与导入 / 导出 JSON，不依赖本地 Node 服务。
+
+
 ## 目录结构
 
 ```text
