@@ -31,7 +31,7 @@ test-html-annotation/
 
 ### Skill
 
-`/Users/webwlx/Documents/Myself/protype-skills-codex/.agents/skills/html-annotation-overlay`
+`./.agents/skills/html-annotation-overlay`
 
 包含：
 - `SKILL.md`
@@ -43,7 +43,7 @@ test-html-annotation/
 
 ### Demo
 
-`/Users/webwlx/Documents/Myself/protype-skills-codex/test-html-annotation`
+`./test-html-annotation`
 
 包含：
 - `index.html`：测试页面
@@ -86,7 +86,7 @@ test-html-annotation/
 进入 demo 目录：
 
 ```bash
-cd /Users/webwlx/Documents/Myself/protype-skills-codex/test-html-annotation
+cd test-html-annotation
 ```
 
 安装依赖：
