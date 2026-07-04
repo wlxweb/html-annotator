@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9610出口 · 关擎报关系统 · 中跨云服</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; font-size: 14px; color: #333; background: #f5f6fa; min-width: 1200px; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Top Bar ── */
+    .top-bar {
+      background: #1a3a6b; color: #c8d8f0; font-size: 12px;
+      padding: 0 40px; height: 34px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .top-bar .left { display: flex; align-items: center; gap: 6px; }
+    .top-bar .left .slogan-tag {
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      color: #7ec8f8; padding: 1px 8px; border-radius: 10px; font-size: 11px; margin-right: 4px;
+    }
+    .top-bar .left .slogan-text { color: #c8d8f0; }
+    .top-bar .right a { color: #c8d8f0; margin-left: 16px; cursor: pointer; transition: color .2s; }
+    .top-bar .right a:hover { color: #fff; }
+
+    /* ── Header ── */
+    header {
+      background: #fff; border-bottom: 2px solid #1a5fb4;
+      padding: 0 40px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #1a5fb4, #3a8ee6);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px; font-weight: bold;
+    }
+    .logo-text .name { font-size: 20px; font-weight: 700; color: #1a3a6b; letter-spacing: 1px; }
+    .logo-text .domain { font-size: 11px; color: #888; }
+    nav { display: flex; align-items: center; gap: 4px; }
+    nav a {
+      padding: 8px 16px; color: #333; font-size: 14px; font-weight: 500;
+      border-radius: 4px; transition: all .2s; position: relative;
+    }
+    nav a:hover, nav a.active { color: #1a5fb4; background: #eef4ff; }
+    nav a.active::after {
+      content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 20px; height: 2px; background: #1a5fb4; border-radius: 2px;
+    }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .btn-login {
+      padding: 7px 20px; border: 1.5px solid #1a5fb4; color: #1a5fb4;
+      border-radius: 4px; font-size: 13px; cursor: pointer; background: #fff; transition: all .2s;
+    }
+    .btn-login:hover { background: #eef4ff; }
+    .btn-register {
+      padding: 7px 20px; background: #1a5fb4; color: #fff;
+      border: none; border-radius: 4px; font-size: 13px; cursor: pointer; transition: all .2s;
+    }
+    .btn-register:hover { background: #1550a0; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      background: #fff; padding: 9px 40px;
+      border-bottom: 1px solid #e8edf5;
+      font-size: 13px; color: #888;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .breadcrumb a { color: #1a5fb4; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb .sep { color: #ccc; }
+
+    /* ── Hero Banner ── */
+    .hero {
+      background: linear-gradient(110deg, #0b1f45 0%, #0f2d6b 45%, #1a5fb4 100%);
+      height: 340px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; right: 200px; top: -80px;
+      width: 380px; height: 380px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(58,142,230,.25), transparent 65%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      width: 100%;
+      padding: 0 80px 0 120px;
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 40px;
+    }
+    .hero-left { flex: 1; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+      color: #7ec8f8; padding: 4px 14px; border-radius: 20px;
+      font-size: 12px; margin-bottom: 18px;
+    }
+    .hero-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: #7ec8f8; display: inline-block;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    .hero-title {
+      font-size: 40px; font-weight: 800; color: #fff;
+      line-height: 1.25; letter-spacing: 2px; margin-bottom: 12px;
+    }
+    .hero-title .line2 { display: block; }
+    .hero-title .accent { color: #4db8ff; }
+    .hero-desc {
+      font-size: 15px; color: rgba(255,255,255,.72);
+      margin-bottom: 24px;
+    }
+    .hero-cta { display: flex; gap: 12px; align-items: center; }
+    .btn-primary {
+      padding: 10px 28px; background: #1a5fb4;
+      color: #fff; border: none; border-radius: 4px;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s;
+    }
+    .btn-primary:hover { background: #1550a0; transform: translateY(-1px); }
+    .btn-ghost {
+      padding: 10px 28px; background: transparent; color: #fff;
+      border: 1.5px solid rgba(255,255,255,.5); border-radius: 4px;
+      font-size: 14px; cursor: pointer; transition: all .2s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.1); }
+    .hero-right {
+      flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; gap: 20px;
+    }
+    .hero-icon-box {
+      width: 110px; height: 110px; border-radius: 22px;
+      background: linear-gradient(135deg, rgba(26,95,180,.55), rgba(58,142,230,.38));
+      border: 1px solid rgba(255,255,255,.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.28);
+      backdrop-filter: blur(8px);
+    }
+    .hero-stats { display: flex; gap: 14px; }
+    .hero-stat {
+      text-align: center;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px; padding: 9px 16px; min-width: 64px;
+    }
+    .hero-stat .num { font-size: 18px; font-weight: 700; color: #4db8ff; }
+    .hero-stat .lbl { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; }
+
+    /* ── Main 全宽容器 ── */
+    .main { padding: 24px 40px 40px; }
+
+    /* ── 卡片通用 ── */
+    .card {
+      background: #fff; border-radius: 8px;
+      box-shadow: 0 1px 6px rgba(26,95,180,.07);
+      border: 1px solid #e0e8f5;
+      padding: 24px 28px; margin-bottom: 20px;
+    }
+
+    /* ── 卡片标题 ── */
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px; padding-bottom: 12px;
+      border-bottom: 2px solid #e8edf5;
+      position: relative;
+    }
+    .card-header::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 60px; height: 2px; background: #1a5fb4;
+    }
+    .card-title {
+      font-size: 17px; font-weight: 700; color: #1a3a6b;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title .icon {
+      width: 22px; height: 22px; border-radius: 4px;
+      background: #1a5fb4; color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 12px;
+      flex-shrink: 0;
+    }
+    .card-subtitle {
+      font-size: 13px; color: #999;
+      margin-top: 8px; margin-bottom: 20px;
+    }
+
+    /* ── 核心能力 6格 ── */
+    .module-grid-6 {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    }
+    .module-item-6 {
+      padding: 20px; border-radius: 8px;
+      border: 1px solid #e0e8f5; background: #fff;
+      display: flex; align-items: flex-start; gap: 14px;
+      transition: all .25s; cursor: pointer;
+    }
+    .module-item-6:hover {
+      border-color: #1a5fb4;
+      box-shadow: 0 4px 16px rgba(26,95,180,.12);
+      transform: translateY(-2px);
+    }
+    .module-item-6 .mi-icon {
+      width: 48px; height: 48px; border-radius: 8px;
+      background: linear-gradient(135deg, #1a5fb4, #3a8ee6);
+      color: #fff; font-size: 22px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .module-item-6 .mi-body { flex: 1; }
+    .module-item-6 .mi-title { font-size: 15px; font-weight: 600; color: #1a3a6b; margin-bottom: 6px; }
+    .module-item-6 .mi-desc { font-size: 12px; color: #777; line-height: 1.7; }
+
+    /* ── 为什么选择 6格 ── */
+    .why-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    }
+    .why-item {
+      padding: 20px; border-radius: 8px;
+      border: 1px solid #e0e8f5; background: #fff;
+      transition: all .25s; cursor: pointer;
+    }
+    .why-item:hover {
+      border-color: #1a5fb4;
+      box-shadow: 0 4px 16px rgba(26,95,180,.12);
+      transform: translateY(-2px);
+    }
+    .why-item .wi-icon-wrap {
+      width: 44px; height: 44px; border-radius: 8px;
+      background: #eef3ff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 12px;
+    }
+    .why-item .wi-title { font-size: 15px; font-weight: 600; color: #1a3a6b; margin-bottom: 6px; }
+    .why-item .wi-desc { font-size: 12px; color: #777; line-height: 1.7; }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: linear-gradient(120deg, #0d2447, #1a5fb4);
+      border-radius: 8px; padding: 36px 40px;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .cta-left h2 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .cta-left p { font-size: 13px; color: #a8d4f8; }
+    .btn-cta {
+      padding: 12px 36px; background: #fff; color: #1a5fb4;
+      border: none; border-radius: 4px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all .2s; white-space: nowrap;
+    }
+    .btn-cta:hover { transform: scale(1.03); }
+
+    /* ── Footer ── */
+    footer { background: #1a3a6b; color: rgba(255,255,255,.7); padding: 32px 40px 20px; }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 24px; }
+    .footer-brand .name { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .footer-brand p { font-size: 13px; line-height: 1.8; }
+    .footer-brand .contacts { margin-top: 12px; font-size: 13px; }
+    .footer-brand .contacts div { margin-bottom: 4px; }
+    .footer-brand .contacts strong { color: #7ec8f8; }
+    .footer-col h4 { color: #fff; font-size: 14px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,.15); }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,.6); margin-bottom: 6px; cursor: pointer; transition: color .2s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,.15); padding-top: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+  </style>
+
+  <link rel="stylesheet" href="./preview-overlay.css" />
+  <script src="./vendor/lucide.min.js"></script>
+  <script type="module" src="./preview-overlay.js"></script>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="left">
+      <span style="font-size:13px;">🌏</span>
+      <span class="slogan-tag">全国跨境电商一站式企业服务平台</span>
+      <span class="slogan-text">专业 · 高效 · 合规，助力中国企业扬帆出海</span>
+    </div>
+    <div class="right">
+      <a href="#">帮助中心</a>
+      <a href="#">关于我们</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">跨</div>
+      <div class="logo-text">
+        <div class="name">中跨云服</div>
+        <div class="domain">singlewindow.com.cn</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#">首页</a>
+      <a href="#">企业资质</a>
+      <a href="#" class="active">报关服务</a>
+      <a href="#">税务服务</a>
+      <a href="#">运营服务</a>
+      <a href="#">下载中心</a>
+    </nav>
+    <div class="header-right">
+      <button class="btn-login">登录</button>
+      <button class="btn-register">免费注册</button>
+    </div>
+  </header>
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="#">首页</a>
+    <span class="sep">›</span>
+    <a href="#">报关服务</a>
+    <span class="sep">›</span>
+    <span>9610出口</span>
+  </div>
+
+  <!-- Hero Banner（无切换箭头和指示点） -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge">全新升级 · 智能报关平台</div>
+        <h1 class="hero-title">
+          关擎 · <span class="accent">9610 出口</span>
+          <span class="line2">新一代报关引擎</span>
+        </h1>
+        <div class="hero-desc">覆盖 9610 出口全场景报关业务，三单合一智能申报，一站式高效通关</div>
+        <div class="hero-cta">
+          <button class="btn-primary">立即体验</button>
+          <button class="btn-ghost">申请开通</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-icon-box">⚙️</div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">99.9%</div><div class="lbl">申报通过率</div></div>
+          <div class="hero-stat"><div class="num">全国</div><div class="lbl">口岸覆盖</div></div>
+          <div class="hero-stat"><div class="num">秒级</div><div class="lbl">申报响应</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- 关擎核心能力 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="icon">关</div>关擎 · 核心能力</div>
+      </div>
+      <div class="card-subtitle">六大核心模块，覆盖 9610 出口报关全流程</div>
+      <div class="module-grid-6">
+
+        <div class="module-item-6">
+          <div class="mi-icon">📋</div>
+          <div class="mi-body">
+            <div class="mi-title">三单申报</div>
+            <div class="mi-desc">订单、清单、运单一键合一申报，自动校验数据一致性，杜绝退单风险。</div>
+          </div>
+        </div>
+
+        <div class="module-item-6">
+          <div class="mi-icon">📦</div>
+          <div class="mi-body">
+            <div class="mi-title">总分单申报</div>
+            <div class="mi-desc">支持 9610 总分单模式，主单/分单关联管理，业务结构清晰可追溯。</div>
+          </div>
+        </div>
+
+        <div class="module-item-6">
+          <div class="mi-icon">✈️</div>
+          <div class="mi-body">
+            <div class="mi-title">离境单申报</div>
+            <div class="mi-desc">对接海关离境系统，实时获取离境状态，确保出口退税凭证完备。</div>
+          </div>
+        </div>
+
+        <div class="module-item-6">
+          <div class="mi-icon">📊</div>
+          <div class="mi-body">
+            <div class="mi-title">汇总申报</div>
+            <div class="mi-desc">按周期自动汇总清单数据，生成正式报关单，合规归档备案。</div>
+          </div>
+        </div>
+
+        <div class="module-item-6">
+          <div class="mi-icon">🔄</div>
+          <div class="mi-body">
+            <div class="mi-title">退运申报</div>
+            <div class="mi-desc">退货退运业务标准化处理，海关、税务双向闭环。</div>
+          </div>
+        </div>
+
+        <div class="module-item-6">
+          <div class="mi-icon">📈</div>
+          <div class="mi-body">
+            <div class="mi-title">日报 / 月报管理</div>
+            <div class="mi-desc">全维度数据统计，申报状态、平台占比、风险预警一目了然。</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 为什么选择关擎 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><div class="icon">择</div>为什么选择关擎</div>
+      </div>
+      <div class="card-subtitle">数字化、智能化、合规化，专为跨境电商打造</div>
+      <div class="why-grid">
+
+        <div class="why-item">
+          <div class="wi-icon-wrap">⚡</div>
+          <div class="wi-title">极速申报</div>
+          <div class="wi-desc">平均申报时效 1 分钟，三单合一键提交，海关回执实时反馈。</div>
+        </div>
+
+        <div class="why-item">
+          <div class="wi-icon-wrap">🎯</div>
+          <div class="wi-title">高通过率</div>
+          <div class="wi-desc">智能数据校验引擎，申报通过率 99.9%，大幅降低退单率。</div>
+        </div>
+
+        <div class="why-item">
+          <div class="wi-icon-wrap">🔒</div>
+          <div class="wi-title">合规保障</div>
+          <div class="wi-desc">实时同步海关最新政策，HS 编码 10 位自动校验，规避合规风险。</div>
+        </div>
+
+        <div class="why-item">
+          <div class="wi-icon-wrap">🧠</div>
+          <div class="wi-title">智能引擎</div>
+          <div class="wi-desc">AI 品名转换、申报要素自动匹配，黑名单 / 两用物项 / 出口许可智能风控。</div>
+        </div>
+
+        <div class="why-item">
+          <div class="wi-icon-wrap">📊</div>
+          <div class="wi-title">数据可视</div>
+          <div class="wi-desc">申报状态分布、平台占比、风险预警单量等数据全程透明可查。</div>
+        </div>
+
+        <div class="why-item">
+          <div class="wi-icon-wrap">🤝</div>
+          <div class="wi-title">专属服务</div>
+          <div class="wi-desc">5000+ 跨境企业的共同选择，一对一专属客服 7×12 小时在线响应。</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <div class="cta-left">
+        <h2>立即开启 9610 智能报关</h2>
+        <p>登录关擎数字化报关系统，一站式完成三单申报</p>
+      </div>
+      <button class="btn-cta">进入关擎系统 →</button>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="name">中跨云服</div>
+        <p>全国跨境电商一站式企业服务平台<br/>专注为中国跨境电商企业提供高效、合规的综合服务解决方案。</p>
+        <div class="contacts">
+          <div>📞 客服电话：<strong>16732188576</strong></div>
+          <div>💬 客服微信：<strong>8836552</strong></div>
+          <div>🌐 网址：<strong>singlewindow.com.cn</strong></div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>企业资质</h4>
+        <a href="#">海关备案</a>
+        <a href="#">IC卡申请</a>
+        <a href="#">DxpID申请</a>
+      </div>
+      <div class="footer-col">
+        <h4>报关服务</h4>
+        <a href="#">9610报关</a>
+        <a href="#">9710报关</a>
+        <a href="#">9810报关</a>
+        <a href="#">1210报关</a>
+        <a href="#">代理报关</a>
+      </div>
+      <div class="footer-col">
+        <h4>更多服务</h4>
+        <a href="#">出口退税</a>
+        <a href="#">无票免税</a>
+        <a href="#">全球开店</a>
+        <a href="#">独立站</a>
+        <a href="#">国际商标注册</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Copyright © 2026 杭州中跨云服科技有限公司 版权所有</span>
+      <span>备案号：浙ICP备2321171631号</span>
+    </div>
+  </footer>
+
+</body>
+</html>
