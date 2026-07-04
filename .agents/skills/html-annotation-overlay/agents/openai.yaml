@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML Annotation Overlay"
+  short_description: "Build draggable in-page HTML annotations"
+  default_prompt: "Use $html-annotation-overlay to add draggable numbered annotations to an HTML page with local JSON persistence."
