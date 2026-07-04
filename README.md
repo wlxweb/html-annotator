@@ -25,8 +25,15 @@
 ## 在线预览
 
 - GitHub Pages 预览：[https://wlxweb.github.io/html-annotator/](https://wlxweb.github.io/html-annotator/)
-- 说明：Pages 预览版使用 `localStorage` 与导入 / 导出 JSON，不依赖本地 Node 服务。
+- 说明：Pages 预览版使用自制公开 demo 页面，基于 `localStorage` 与导入 / 导出 JSON，不依赖本地 Node 服务。
 
+
+
+## Demo 页面说明
+
+- 仓库中的 demo 页面为**自制公开演示页**，不包含真实业务系统内容。
+- GitHub Pages 与本地 `test-html-annotation/` 使用同一套演示结构。
+- 在线预览适合测试标注、设置、导入导出、快捷键与弹窗交互。
 
 ## 目录结构
 
