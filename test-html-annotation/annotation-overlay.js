@@ -18,7 +18,7 @@ const API = {
 const DEFAULT_DATA = {
   version: 1,
   page: { path: location.pathname, title: document.title },
-  ui: { launcher: { x: 24, y: 24 }, showMarkers: true },
+  ui: { launcher: getDefaultLauncherPosition(), showMarkers: true },
   annotations: []
 };
 
@@ -225,8 +225,16 @@ function renderAll() {
 }
 
 function syncLauncherPosition() {
-  launcher.style.left = state.data.ui.launcher.x + 'px';
-  launcher.style.top = state.data.ui.launcher.y + 'px';
+  const fallback = getDefaultLauncherPosition();
+  const maxX = Math.max(8, window.innerWidth - 58 - 8);
+  const maxY = Math.max(8, window.innerHeight - 58 - 8);
+  const rawX = Number.isFinite(state.data?.ui?.launcher?.x) ? state.data.ui.launcher.x : fallback.x;
+  const rawY = Number.isFinite(state.data?.ui?.launcher?.y) ? state.data.ui.launcher.y : fallback.y;
+  const x = clamp(rawX, 8, maxX);
+  const y = clamp(rawY, 8, maxY);
+  state.data.ui.launcher = { x, y };
+  launcher.style.left = x + 'px';
+  launcher.style.top = y + 'px';
   const badge = launcher.querySelector('.hao-launcher-count');
   if (badge) badge.textContent = String((state.data.annotations || []).length);
 }
@@ -237,8 +245,14 @@ function renderMenu() {
   if (!state.menuOpen) return;
   const menu = document.createElement('div');
   menu.className = 'hao-menu hao-anim-in';
-  menu.style.left = state.data.ui.launcher.x + 'px';
-  menu.style.top = state.data.ui.launcher.y + 56 + 'px';
+  const menuLeft = clamp(state.data.ui.launcher.x, 8, Math.max(8, window.innerWidth - 236));
+  const preferredTop = state.data.ui.launcher.y + 64;
+  const menuHeight = 264;
+  const menuTop = preferredTop + menuHeight > window.innerHeight - 8
+    ? Math.max(8, state.data.ui.launcher.y - menuHeight - 12)
+    : preferredTop;
+  menu.style.left = menuLeft + 'px';
+  menu.style.top = menuTop + 'px';
   const actions = [
     { label: '查看所有标注 (L)', icon: 'folder-open', action: () => { state.panelOpen = true; state.menuOpen = false; renderAll(); } },
     { label: '显示所有标注点 (/)', icon: 'eye', action: async () => { state.data.ui.showMarkers = true; await persist(); } },
@@ -388,7 +402,16 @@ function openEditor({ mode, target = null, annotation = null }) {
   editor.innerHTML = `
     <h3>${mode === 'create' ? '新建标注' : '编辑标注'}</h3>
     <div class="hao-editor-meta">支持 Markdown（Cmd/Ctrl + Enter 保存）</div>
-    <textarea placeholder="输入标注内容，支持 Markdown（Cmd/Ctrl + Enter 保存）">${escapeHtml(annotation?.markdown || '')}</textarea>
+    <div class="hao-editor-grid">
+      <div class="hao-editor-pane">
+        <div class="hao-editor-pane-title">编辑内容</div>
+        <textarea placeholder="输入标注内容，支持 Markdown（Cmd/Ctrl + Enter 保存）">${escapeHtml(annotation?.markdown || '')}</textarea>
+      </div>
+      <div class="hao-editor-pane">
+        <div class="hao-editor-pane-title">实时预览</div>
+        <div class="hao-preview-body hao-editor-preview"></div>
+      </div>
+    </div>
     <div class="hao-editor-actions">
       ${mode === 'edit' ? '<button class="hao-btn-danger" data-act="delete"><i data-lucide="trash-2"></i><span>删除</span></button>' : ''}
       <button class="hao-btn-secondary" data-act="cancel"><i data-lucide="undo-2"></i><span>取消</span></button>
@@ -436,12 +459,18 @@ function openEditor({ mode, target = null, annotation = null }) {
   });
 
   const editorTextarea = editor.querySelector('textarea');
+  const editorPreview = editor.querySelector('.hao-editor-preview');
+  const syncEditorPreview = () => {
+    editorPreview.innerHTML = renderMarkdown(editorTextarea.value || '') || '<p class="hao-editor-preview-empty">输入 Markdown 后将在这里预览</p>';
+  };
+  editorTextarea.addEventListener('input', syncEditorPreview);
   editorTextarea.addEventListener('keydown', async (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
       await saveEditor();
     }
   });
+  syncEditorPreview();
   root.appendChild(editor);
   refreshLucide();
   state.editorEl = editor;
@@ -1003,5 +1032,14 @@ function escapeHtml(str) {
 }
 
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+function getDefaultLauncherPosition() {
+  const size = 58;
+  const offsetX = Math.max(24, Math.round(window.innerWidth * 0.1));
+  const offsetY = Math.max(24, Math.round(window.innerHeight * 0.1));
+  return {
+    x: Math.max(8, window.innerWidth - size - offsetX),
+    y: Math.max(8, window.innerHeight - size - offsetY)
+  };
+}
 function camelToKebab(s) { return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase()); }
 function cssEscape(s) { return String(s).replaceAll('\\', '\\\\').replaceAll('"', '\\"'); }
