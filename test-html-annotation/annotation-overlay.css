@@ -1,3 +1,19 @@
+
+@keyframes hao-launcher-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(.88);
+  }
+  60% {
+    opacity: 1;
+    transform: translate3d(0, -3px, 0) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 .hao-root,
 .hao-root * { box-sizing: border-box; }
 
@@ -5,6 +21,8 @@
   position: fixed;
   left: 24px;
   top: 24px;
+  animation: hao-launcher-enter .42s cubic-bezier(.2,.8,.2,1);
+  transform-origin: center;
   width: 58px;
   height: 58px;
   border: none;
@@ -148,6 +166,7 @@
 .hao-editor textarea {
   width: 100%;
   min-height: 180px;
+  height: 100%;
   resize: vertical;
   border: 1px solid #d1d5db;
   border-radius: 10px;
@@ -159,6 +178,35 @@
   font-size: 12px;
   margin: 0 0 10px;
   word-break: break-all;
+}
+.hao-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, .92fr);
+  gap: 14px;
+  align-items: stretch;
+}
+.hao-editor-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.hao-editor-pane-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.hao-editor-preview {
+  min-height: 180px;
+  height: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafaf9;
+  overflow: auto;
+}
+.hao-editor-preview-empty {
+  color: #9ca3af;
 }
 .hao-editor-actions {
   display: flex;
